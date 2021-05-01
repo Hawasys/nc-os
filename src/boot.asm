@@ -8,9 +8,9 @@ call READ_DISK
 
 jmp PROTECTED_32BIT_MODE
 
-%include "print.asm"
-%include "disk.asm"
-%include "gdt.asm"
+%include "src/print.asm"
+%include "src/disk.asm"
+%include "src/gdt.asm"
 
 PROTECTED_32BIT_MODE:
     call ENABLE_A20
