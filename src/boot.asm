@@ -4,6 +4,8 @@
 mov si, BOOT_MSG
 call printf
 
+mov [BOOT_DISK], dl
+call READ_DISK
 jmp $
 
 %include "print.asm"
