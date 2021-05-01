@@ -10,12 +10,14 @@ READ_DISK:
     mov cl, 0x02
     int 0x13
     jc DISK_READ_ERROR
+    mov si, DISK_READ_MGS
+    call printf
     ret
 
 BOOT_DISK: db 0
 
 DISK_READ_ERROR_STR: db 'DISK READ ERROR', 0
-
+DISK_READ_MGS: db 'DISK READ', 0
 DISK_READ_ERROR:
     mov si, DISK_READ_ERROR_STR
     call printf
