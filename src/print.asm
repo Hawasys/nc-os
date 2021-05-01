@@ -1,5 +1,3 @@
-[bits 16]
-
 printf:
     pusha
     str_loop:

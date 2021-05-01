@@ -1,15 +1,14 @@
 [org 0x7c00]
-[bits 16]
 
 mov si, BOOT_MSG
 call printf
 
 mov [BOOT_DISK], dl
 call READ_DISK
-jmp $
+jmp SPACE
 
-%include "print.asm"
-%include "disk.asm"
+%include "src/print.asm"
+%include "src/disk.asm"
 
 BOOT_MSG:db 'booting...', 0
 
