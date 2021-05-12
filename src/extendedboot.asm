@@ -1,6 +1,5 @@
-[org 0x7e00]
 PAGE_TABLE_ENTRY equ 0x1000
-
+[bits 16]
 PROTECTED_32BIT_MODE:
     call ENABLE_A20
     cli
@@ -11,7 +10,6 @@ PROTECTED_32BIT_MODE:
     jmp CODESEG:START_PROTECTED_MODE
 
 %include "src/gdt.asm"
-%include "src/print.asm"
 
 ENABLE_A20:
     in al, 0x92
@@ -98,11 +96,14 @@ SETUP_PAGING:
 
     ret
 [bits 64]
+[extern _start]
 START_64BIT:
     mov edi, 0xb8000
 	mov rax, 0x1f201f201f201f20
 	mov ecx, 500
 	rep stosq
+    mov [0xb8000], byte 'h'
+    call _start
     jmp $
 
 

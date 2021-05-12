@@ -3,7 +3,7 @@ SPACE equ 0x7e00
 READ_DISK:
     mov ah, 0x02
     mov bx, SPACE
-    mov al, 4
+    mov al, 16
     mov dl, [BOOT_DISK]
     mov ch, 0x00
     mov dh, 0x00
