@@ -8,7 +8,7 @@ mov bp, 0x7c00
 mov sp, bp
 call READ_DISK
 
-jmp 0x7e00
+jmp 0x8000
 
 %include "src/print.asm"
 %include "src/disk.asm"

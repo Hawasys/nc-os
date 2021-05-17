@@ -1,6 +1,6 @@
-BUILD_DIR = ./buil
+BUILD_DIR = ./build
 ASM=nasm
-OPTS=-m64 -nostdlib -ffreestanding -mno-red-zone -fno-exceptions -nostdlib -Wall -Wextra -Werror
+OPTS= -g -m64 -nostdlib -Ttext 0x8000 -ffreestanding -mno-red-zone -fno-exceptions -nostdlib -Wall -Wextra
 all: run
 
 run: image.bin
@@ -19,9 +19,9 @@ $(BUILD_DIR)/kernel.o: src/kernel/kernel.c
 
 $(BUILD_DIR)/kernel.bin: $(BUILD_DIR)/extendedboot.o $(BUILD_DIR)/kernel.o
 	x86_64-elf-ld -T linker.ld -shared -ffreestanding -nostdlib -fno-pie -o $@ -Ttext 0x7e00 $^ 
-	 
+
 image.bin: $(BUILD_DIR)/boot.bin $(BUILD_DIR)/kernel.bin
 	@cat $^ > image.bin
-	
+
 clean: $(BUILD_DIR) image.bin 
 	@rm -rf $(BUILD_DIR) $^

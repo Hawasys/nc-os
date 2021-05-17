@@ -1,24 +1,23 @@
-ENTRY(boot)
 OUTPUT_FORMAT("binary")
+ENTRY(_start)
+
 SECTIONS
 {
-    . = 0x7c00;
-    .text :
-    {
-        *(.boot)
-        *(.text)
+    . = 0x8000;
+
+    .text : ALIGN(0x1000){
+      *(.text)
     }
-    .rodata :
-    {
-        *(.rodata)
+    .data : ALIGN(0x1000){
+      *(.data)
     }
-    .data :
-    {
-        *(.data)
+
+    rodata : ALIGN(0x1000){
+      *(.rodata)
     }
-    .bss :
-    {
-        *(.bss)
+
+    .bss : ALIGN(0x1000){
+    *(COMMON)
+    *(.bss)
     }
 }
-

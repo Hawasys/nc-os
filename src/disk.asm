@@ -1,9 +1,9 @@
-SPACE equ 0x7e00
+SPACE equ 0x8000
 
 READ_DISK:
     mov ah, 0x02
     mov bx, SPACE
-    mov al, 16
+    mov al, 32
     mov dl, [BOOT_DISK]
     mov ch, 0x00
     mov dh, 0x00

@@ -102,7 +102,6 @@ START_64BIT:
 	mov rax, 0x1f201f201f201f20
 	mov ecx, 500
 	rep stosq
-    mov [0xb8000], byte 'h'
     call _start
     jmp $
 
