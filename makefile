@@ -1,27 +1,18 @@
 BUILD_DIR = ./build
-ASM=nasm
-OPTS= -g -m64 -nostdlib -Ttext 0x8000 -ffreestanding -mno-red-zone -fno-exceptions -nostdlib -Wall -Wextra
+OPTS= -nostdlib -ffreestanding -mno-red-zone -fno-exceptions -Wall -Wextra
+GCC=/usr/local/i386elfgcc/bin/i386-elf-gcc
+
 all: run
 
-run: image.bin
+run: kernel.bin
 	qemu-system-x86_64 -fda $<
 
-$(BUILD_DIR)/boot.bin: src/boot.asm
+$(BUILD_DIR)/boot.o: src/boot.asm
 	@mkdir -p $(BUILD_DIR)
-	$(ASM) -f bin $< -o $@
+	@nasm -f elf32 $< -o $@
 
-$(BUILD_DIR)/extendedboot.o: src/extendedboot.asm
-	@mkdir -p $(BUILD_DIR)
-	$(ASM) -f elf64 $< -o $@
+kernel.bin: src/kernel/kernel.c $(BUILD_DIR)/boot.o
+	@$(GCC) $^ -o $@ $(OPTS) -T linker.ld
 
-$(BUILD_DIR)/kernel.o: src/kernel/kernel.c
-	x86_64-elf-gcc $(OPTS) $< -o $@ 
-
-$(BUILD_DIR)/kernel.bin: $(BUILD_DIR)/extendedboot.o $(BUILD_DIR)/kernel.o
-	x86_64-elf-ld -T linker.ld -shared -ffreestanding -nostdlib -fno-pie -o $@ -Ttext 0x7e00 $^ 
-
-image.bin: $(BUILD_DIR)/boot.bin $(BUILD_DIR)/kernel.bin
-	@cat $^ > image.bin
-
-clean: $(BUILD_DIR) image.bin 
+clean: kernel.bin 
 	@rm -rf $(BUILD_DIR) $^

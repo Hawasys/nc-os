@@ -1,7 +1,8 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "std/print.c"
-
 void _start(){
+    const short color = 0x0F00;
+    const char* hello = "kernel boooi";
+    short* vga = (short*)0xb8000;
+    for (int i = 0; i < 16; i++){
+        vga[i+80] = color | hello[i];
+    }
 }
