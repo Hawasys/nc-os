@@ -8,17 +8,9 @@ boot:
 
 	mov ax, 0x3
 	int 0x10
+    
+    call READ_DISK
 
-	mov [DISK],dl
-
-	mov ah, 0x2    ;read sectors
-	mov al, 6      ;sectors to read
-	mov ch, 0      ;cylinder idx
-	mov dh, 0      ;head idx
-	mov cl, 2      ;sector idx
-	mov dl, [DISK] ;DISK idx
-	mov bx, copy_target;target pointer
-	int 0x13
 	cli
 	lgdt [gdt_pointer]
 	mov eax, cr0
@@ -26,30 +18,8 @@ boot:
 	mov cr0, eax
     jmp CODESEG:kernel_load
 
-GDT_START:
-	dq 0x0
-GDT_CODE:
-	dw 0xFFFF
-	dw 0x0
-	db 0x0
-	db 10011010b
-	db 11001111b
-	db 0x0
-GDT_DATA:
-	dw 0xFFFF
-	dw 0x0
-	db 0x0
-	db 10010010b
-	db 11001111b
-	db 0x0
-GDT_END:
-gdt_pointer:
-	dw GDT_END - GDT_START
-	dd GDT_START
-DISK:
-	db 0x0
-CODESEG equ GDT_CODE - GDT_START
-DATASEG equ GDT_DATA - GDT_START
+%include "src/gdt.asm"
+%include "src/disk.asm"
 
 times 510 - ($-$$) db 0
 dw 0xaa55
@@ -64,12 +34,12 @@ kernel_load:
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
-	mov esp,kernel_stack_top
-	extern _start
+    
+    extern _start
 	call _start
 	cli
 	hlt
-
+    
 section .bss
 align 4
 kernel_stack_bottom: equ $

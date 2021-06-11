@@ -1,8 +1,4 @@
-void _start(){
-    const short color = 0x0F00;
-    const char* hello = "kernel boooi";
-    short* vga = (short*)0xb8000;
-    for (int i = 0; i < 16; i++){
-        vga[i+80] = color | hello[i];
-    }
+void _start()
+{
+    *((int*)0xb8000)=0x07690748;
 }
