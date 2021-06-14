@@ -2,6 +2,7 @@
 
 void _start()
 {
-    fuckprint("fuckyou");
-    write_string(12, "asd");
+    mv_cursor(position_xy(12, 3));
+    write_string(12,"astronaut_8 space tester");
+    loop();
 }

@@ -23,3 +23,15 @@ uint_16 position_xy(uint_8 x, uint_8 y)
     return y*vga_width+x;
 }
 
+void write_string(int colour, const char *string)
+{
+    uint_16 position = cursorpos;
+    uint_8 *video = (uint_8*)(0xB8000)+position*2;
+    while( *string != 0 )
+    {
+        *video++ = *string++;
+        *video++ = colour;
+        position++;
+    }
+    mv_cursor(position);
+}
