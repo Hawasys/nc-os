@@ -2,7 +2,7 @@
 
 void _start()
 {
+    clear_screen(14);
     mv_cursor(position_xy(12, 3));
-    write_string(12, "astronaut_39 color tester ");
-    write_string(10, "astronaut_40 color tester ");
+    write_string(VGA_BACKGROUND_RED, VGA_FOREGROUND_COLOR_WHITE, "astronaut_42 \n new line tester");
 }
