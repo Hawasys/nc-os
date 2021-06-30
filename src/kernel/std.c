@@ -40,48 +40,71 @@ enum vga_background_color {
     VGA_BACKGROUND_BLINKINGWHITE = 0xF0,
 };
 
-# define vga_mem (uint_8 *)0xb8000
-# define vga_width 80
-
-uint_16 cursorpos;
+# define VGA_MEM (uint_8 *)0xb8000
+# define VGA_WIDTH (uint_16)80
 
 void loop(){while(1){}}
 
-void mv_cursor(uint_16 position)
+void enable_cursor(uint_8 cursor_start, uint_8 cursor_end)
 {
-    outbyte(0x3d4, 0x0f);
-    outbyte(0x3d5, (uint_8)(cursorpos & 0xff));
-    outbyte(0x3d4, 0x0e);
-    outbyte(0x3d5, (uint_8)((cursorpos >> 8) & 0xff));
-    cursorpos = position;
+	outbyte(0x3D4, 0x0A);
+	outbyte(0x3D5, (inbyte(0x3D5) & 0xC0) | cursor_start);
+ 
+	outbyte(0x3D4, 0x0B);
+	outbyte(0x3D5, (inbyte(0x3D5) & 0xE0) | cursor_end);
 }
 
-uint_16 position_xy(uint_8 x, uint_8 y)
+void disable_cursor()
 {
-    return y*vga_width+x;
+	outbyte(0x3D4, 0x0A);
+	outbyte(0x3D5, 0x20);
+}
+
+void move_cursor(int pos)
+{
+	outbyte(0x3D4, 0x0F);
+	outbyte(0x3D5, (uint_8) (pos & 0xFF));
+	outbyte(0x3D4, 0x0E);
+	outbyte(0x3D5, (uint_8) ((pos >> 8) & 0xFF));
+}
+
+void move_cursor_xy(int x, int y)
+{
+	uint_16 pos = y * VGA_WIDTH + x;
+ 
+	outbyte(0x3D4, 0x0F);
+	outbyte(0x3D5, (uint_8) (pos & 0xFF));
+	outbyte(0x3D4, 0x0E);
+	outbyte(0x3D5, (uint_8) ((pos >> 8) & 0xFF));
+}
+
+uint_16 get_cursor_position(void)
+{
+    uint_16 pos = 0;
+    outbyte(0x3D4, 0x0F);
+    pos |= inbyte(0x3D5);
+    outbyte(0x3D4, 0x0E);
+    pos |= ((uint_16)inbyte(0x3D5)) << 8;
+    return pos;
 }
 
 void write_string(enum vga_background_color bg, enum vga_foreground_color fg, const char *string)
 {
-    uint_16 position = cursorpos; 
+    uint_16 position = get_cursor_position(); 
     while( *string != 0 )
     {
-        switch (*string) {
+        switch (*string) 
+        {
             case 10:
-                position+= vga_width;
+                position += VGA_WIDTH;
+                string++;
+                break;
+            default:
+                *( VGA_MEM + position*2 ) = *string++;
+                *( VGA_MEM + position*2 + 1) = fg|bg;
+                position++;
+                break;
         }
-        
-        *( vga_mem + position*2 ) = *string++;
-        *( vga_mem + position*2 + 1) = fg|bg;
-        mv_cursor(position++);
     }
-}
-
-void clear_screen(int colour)
-{
-    for(short * i = (short *)0xb8000; i < (short *)0xb8001; i ++)
-    {
-        *(i) = 't';
-        *(i+1) = colour;
-    }
+    move_cursor(position);
 }
