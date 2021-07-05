@@ -95,16 +95,30 @@ void write_string(enum vga_background_color bg, enum vga_foreground_color fg, co
     {
         switch (*string) 
         {
-            case 10:
+            case 10: //new line
                 position += VGA_WIDTH;
-                string++;
+                break;
+            case 13: //carriage return
+                position -= position % VGA_WIDTH;
                 break;
             default:
-                *( VGA_MEM + position*2 ) = *string++;
+                *( VGA_MEM + position*2 ) = *string;
                 *( VGA_MEM + position*2 + 1) = fg|bg;
                 position++;
                 break;
         }
+        string ++;
     }
     move_cursor(position);
 }
+
+void clear_screen(enum vga_background_color bg)
+{
+    const char *clearchar = "\n";
+    for (uint_64* i = (uint_64*)VGA_MEM; i < (uint_64*)(VGA_MEM + 4000); i++){
+        *i = *clearchar;
+        *(i+1) = VGA_FOREGROUND_COLOR_BLACK|bg;
+    }
+    move_cursor(0);
+}
+
